@@ -1,0 +1,31 @@
+version: "3.3"
+
+services:
+    nginx:
+        build:
+            context: ""
+            dockerfile: docker/Nginx.Dockerfile
+        ports:
+            - 8088:80
+        links:
+            - fpm
+        volumes:
+            - ./:/var/www/Currency-converter
+    fpm:
+        build:
+            context: ""
+            dockerfile: docker/Fpm.Dockerfile
+        volumes:
+            - ./:/var/www/Currency-converter
+        links:
+            - mysql
+    mysql:
+        image: mysql:5.7
+        ports:
+            - 33061:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=my_db
+        volumes:
+        - ./docker/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+        - ./databases/dump.sql:/docker-entrypoint-initdb.d/dump.sql
